@@ -1,0 +1,476 @@
+/* ===== GLOBAL STYLES & RESETS ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fffdf6;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+ul, p {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.handwritten-text text {
+    font-family: 'Italiana', cursive;
+    font-size: 30px;
+    fill: none;
+    stroke: #ff9800;
+    stroke-width: 0.5px;
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+    animation: drawText 3s ease forwards;
+}
+
+.welcome-subtext {
+    font-family: 'Italiana', sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    margin: 0px 0 50px;
+    color: #444;
+}
+
+/* ===== LAYOUT & VIEWS ===== */
+.search-view, .ingredient-search-view, .centered-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.recipe-view {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fffaf5;
+}
+
+.ingredients-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #fffefc;
+}
+
+/* ===== COMPONENTS ===== */
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    width: 90%;
+    max-width: 450px;
+    margin: auto;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    will-change: transform;
+    overflow: hidden;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+.card p {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.swipe-card {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity;
+}
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+    transition: all 0.4s ease;
+}
+
+.fade-slide-enter-from {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-30px);
+}
+
+/* --- Buttons --- */
+button {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 16px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e88e00;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.back-btn {
+    background-color: #ddd;
+    color: #333;
+    margin-top: 30px;
+}
+
+/* --- Inputs & Lists --- */
+input {
+    padding: 16px 20px;
+    width: 90%;
+    max-width: 400px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+input:focus {
+    outline: none;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+}
+
+.search-result-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.search-result-item {
+    padding: 10px 14px;
+    margin-bottom: 4px;
+    background-color: #fff6e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.search-result-item:hover {
+    background-color: #ffedcc;
+    transform: scale(1.02);
+}
+
+/* --- Tabs --- */
+.tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-bar button {
+    background: #eee;
+    color: #333;
+    font-weight: bold;
+}
+
+.tab-bar button.active {
+    background: #ff9800;
+    color: white;
+}
+
+/* --- Step Indicators --- */
+.step-dots {
+    margin: 15px 0;
+}
+
+.step-dots span {
+    font-size: 18px;
+    color: #ccc;
+    padding: 0 5px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.step-dots .active {
+    color: #ff9800;
+}
+
+/* ===== TIMER ===== */
+.timer-controls {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.timer-btn {
+    background-color: #ff9800;
+    padding: 10px 18px;
+    margin: 6px;
+    font-size: 15px;
+}
+
+.timer-btn.danger {
+    background-color: #ff4d4d;
+}
+
+.timer-btn.danger:hover {
+    background-color: #e03d3d;
+}
+
+.timer-visual {
+    margin: 20px auto;
+    transform: rotate(0deg); /* Start from the top */
+}
+
+.timer-track, .timer-fill {
+    fill: none;
+    stroke-width: 8;
+}
+
+.timer-track {
+    stroke: #eee;
+}
+
+.timer-fill {
+    stroke: #ff9800;
+    transition: stroke-dashoffset 1s linear;
+}
+
+/* ===== INGREDIENTS LIST ===== */
+.ingredient-list {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px 0;
+}
+
+.ingredient-list li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #f9f9f9;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: background-color 0.2s;
+}
+
+.ingredient-list li:hover {
+    background-color: #f0f0f0;
+}
+
+.ingredient-list input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* ===== CAROUSEL ===== */
+.carousel-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-row {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+    animation: scroll-left 60s linear infinite;
+}
+
+.carousel-row:hover {
+    animation-play-state: paused;
+}
+
+.carousel-title {
+    display: inline-block;
+    padding: 10px 18px;
+    margin-right: 15px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.carousel-title:hover {
+    transform: scale(1.05);
+}
+
+/* ===== ANIMATIONS & TRANSITIONS ===== */
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.3s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+@keyframes drawText {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scroll-left {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (max-width: 400px) {
+    .carousel-title {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+.upgraded-view {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.recipe-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.section-heading {
+    font-size: 22px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.ingredient-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.ingredient-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ingredient-item input {
+    margin-right: 10px;
+}
+
+.ingredient-item span.checked {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.ingredient-buttons {
+    margin-top: 20px;
+}
+
+.start-cooking-btn,
+.back-btn {
+    padding: 12px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.start-cooking-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.back-btn {
+    background-color: #eee;
+}
+
+.step-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.step-text {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.step-progress {
+    font-size: 14px;
+    color: #555;
+}
+
+.step-dots {
+    margin: 10px 0;
+}
+
+.step-dots span {
+    font-size: 20px;
+    cursor: pointer;
+    color: #ccc;
+    margin: 0 3px;
+}
+
+.step-dots span.active {
+    color: #28a745;
+}
+
+.timer-btn {
+    padding: 10px 16px;
+    margin: 4px;
+    border-radius: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+}
+
+.timer-btn.danger {
+    background-color: #dc3545;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.step-emoji {
+    font-size: 28px;
+    margin-right: 10px;
+    vertical-align: middle;
+}

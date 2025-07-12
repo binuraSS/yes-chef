@@ -1,0 +1,36 @@
+/* ===== GLOBAL STYLES & RESETS ===== */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #fff7f3, #f0f8ff);
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+ul, p {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.handwritten-text text {
+  font-family: 'Italiana', cursive;
+  font-size: 30px;
+  fill: none;
+  stroke: #ff9800;
+  stroke-width: 0.5px;
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+  animation: drawText 3s ease forwards;
+}
+
+.welcome-subtext {
+  font-family: 'Italiana', sans-serif;
+  font-size: 40px;
+  font-weight: 400;
+  margin: 0px 0 50px;
+  color: #444;
+}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Swipe Recipe App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Vue must be loaded before any component using it -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&display=swap" rel="stylesheet" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/layout.css" />
+    <link rel="stylesheet" href="styles/components.css" />
+    <link rel="stylesheet" href="styles/views.css" />
+    <link rel="stylesheet" href="styles/carousel.css" />
+    <link rel="stylesheet" href="styles/animations.css" />
+    <link rel="stylesheet" href="styles/modern-ui.css" />
+    <link rel="stylesheet" href="styles/glass-ui.css" />
+    <link rel="icon" href="/favicon.ico" />
+</head>
+
+<body>
+    <div id="app">
+        <!-- 🌐 HOME SCREEN -->
+        <div v-if="view === 'home'">
+            <div class="tab-bar">
+                <button @click="activeTab = 'search'" :class="{ active: activeTab === 'search' }">🔍 Search by
+                    Name</button>
+                <button @click="activeTab = 'ingredientSearch'" :class="{ active: activeTab === 'ingredientSearch' }">🥦
+                    Search by Ingredients</button>
+                <button @click="activeTab = 'importUrl'" :class="{ active: activeTab === 'importUrl' }">🌐 Import by
+                    URL</button>
+            </div>
+
+            <!-- Search by Name -->
+            <div v-if="activeTab === 'search'" class="search-view centered-view">
+                <svg class="handwritten-text" viewBox="0 0 500 100">
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Hello Chef,</text>
+                </svg>
+                <h2 class="welcome-subtext">What would you like to make today?</h2>
+                <input v-model="searchQuery" placeholder="Search for a recipe..." />
+
+                <transition-group name="fade" tag="ul" v-if="searchQuery.trim()" class="search-result-list">
+                    <li v-for="(recipe, index) in filteredRecipes" :key="recipe.title" @click="selectRecipe(index)"
+                        class="search-result-item">
+                        {{ recipe.title }}
+                    </li>
+                </transition-group>
+
+                <!-- Carousel -->
+                <div v-if="!searchQuery.trim()" class="carousel-grid">
+                    <div class="carousel-row" v-for="row in 4" :key="row">
+                        <div class="carousel-track">
+                            <span v-for="(recipe, index) in repeatedTitles(row)" :key="index" class="carousel-title"
+                                :style="{ backgroundColor: pastelColors[index % pastelColors.length] }"
+                                @click="selectRecipeByTitle(recipe.title)">
+                                {{ recipe.title }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search by Ingredients -->
+            <div v-if="activeTab === 'ingredientSearch'" class="ingredient-search-view">
+                <h2>Search Recipes by Ingredients</h2>
+                <input v-model="ingredientQuery" placeholder="Type an ingredient..." />
+                <button @click="addIngredient">Add</button>
+                <div class="selected-ingredients">
+                    <span v-for="(ing, index) in selectedIngredients" :key="index">
+                        {{ ing }} <button @click="removeIngredient(index)">x</button>
+                    </span>
+                </div>
+                <ul class="ingredient-results">
+                    <li v-for="(recipe, i) in matchingRecipes" :key="i" @click="selectRecipe(i)">
+                        {{ recipe.title }}
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Import by URL -->
+            <div v-if="activeTab === 'importUrl'" class="url-import-view centered-view">
+                <h2>Paste a recipe URL</h2>
+                <input v-model="urlToImport" placeholder="Paste recipe URL..." />
+                <button @click="scrapeFromUrl">Import</button>
+                <p v-if="scrapeLoading">⏳ Scraping recipe...</p>
+                <p v-if="scrapeError" class="error-text">⚠️ {{ scrapeError }}</p>
+            </div>
+        </div>
+
+        <!-- 🧾 INGREDIENTS VIEW -->
+        <div v-if="view === 'ingredients'" class="ingredients-view upgraded-view">
+            <h2 class="recipe-title">{{ currentRecipe.title }}</h2>
+
+            <div class="ingredients-box">
+                <h3 class="section-heading">🧂 Ingredients</h3>
+                <ul class="ingredient-list">
+                    <li v-for="(item, index) in currentRecipe.ingredients" :key="index">
+                        <label class="ingredient-item">
+                            <input type="checkbox" v-model="checkedIngredients" :value="item" />
+                            <span :class="{ checked: checkedIngredients.includes(item) }">{{ item }}</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="ingredient-buttons">
+                <button @click="backToSearch" class="back-btn">← Back</button>
+                <button @click="goToRecipe" class="start-cooking-btn">👨‍🍳 Start Cooking</button>
+            </div>
+
+            <!-- 🛍️ Shopping List Modal -->
+            <transition name="modal-fade">
+                <div v-if="showShoppingList" class="shopping-list-modal">
+                    <div class="modal-content glass-box">
+                        <h2>🛒 Shopping List</h2>
+                        <ul class="ingredient-list scroll-list">
+                            <li v-for="(item, index) in shoppingList" :key="index">
+                                <label class="ingredient-item">
+                                    <input type="checkbox" v-model="item.checked" />
+                                    <span :class="{ checked: item.checked }">{{ item.name }}</span>
+                                </label>
+                            </li>
+                        </ul>
+                        <div class="modal-actions">
+                            <button class="fancy-button" @click="downloadShoppingList">⬇️ Download as Text</button>
+                            <button class="fancy-button" @click="emailShoppingList">📧 Email to Self</button>
+                            <button class="fancy-button danger" @click="showShoppingList = false">❌ Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+
+            <!-- Floating Button (separate from modal) -->
+            <button class="fab" @click="showShoppingList = true" v-if="view === 'ingredients'">🛒</button>
+            <button class="fab email-fab" @click="emailFullRecipe" v-if="view === 'ingredients'">📧</button>
+
+        </div>
+
+        <!-- 🍳 RECIPE VIEW -->
+        <div v-if="view === 'recipe'" class="recipe-view upgraded-view">
+            <div class="card swipe-card" :style="cardStyle" @touchstart="startTouch" @touchmove="onTouchMove"
+                @touchend="endTouch">
+                <small class="step-progress">Step {{ stepIndex + 1 }} of {{ currentRecipe.steps.length }}</small>
+                <transition name="fade-slide" mode="out-in">
+                    <div :key="stepIndex">
+                        <h2 class="step-title">{{ currentRecipe.title }}</h2>
+                        <p class="step-text">
+                            <span class="step-emoji">{{ getEmoji(currentStep.instruction) }}</span>
+                            {{ currentStep.instruction }}
+                        </p>
+                        <small class="step-progress">Step {{ stepIndex + 1 }} of {{ currentRecipe.steps.length
+                            }}</small>
+                        <div class="step-dots">
+                            <span v-for="(step, i) in currentRecipe.steps" :key="i" :class="{ active: i === stepIndex }"
+                                @click="goToStep(i)">●</span>
+                        </div>
+
+                        <!-- Timer -->
+                        <div v-if="timerRunning || timerPaused" class="timer-visual">
+                            <svg width="100" height="100">
+                                <circle class="timer-track" cx="50" cy="50" r="45" />
+                                <circle class="timer-fill" cx="50" cy="50" r="45" :style="timerCircleStyle" />
+                                <text x="50%" y="55%" text-anchor="middle" fill="#333" font-size="16">
+                                    {{ formattedTimer }}
+                                </text>
+                            </svg>
+                        </div>
+
+                        <div v-if="currentStep.timer" class="timer-buttons">
+                            <button v-if="!timerRunning && !timerPaused" @click="startTimer" class="timer-btn">
+                                ▶️ Start Timer ({{ formatStepTimer(currentStep.timer) }})
+                            </button>
+                            <div v-if="timerRunning || timerPaused" class="timer-controls">
+                                <button v-if="timerRunning" @click="pauseTimer" class="timer-btn">⏸️ Pause</button>
+                                <button v-if="timerPaused" @click="resumeTimer" class="timer-btn">▶️ Resume</button>
+                                <button @click="resetTimer" class="timer-btn danger">⏹️ Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+
+                <button @click="backToSearch" class="back-btn mt-4">← Back to Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import './recipes.js';
+        import '/scripts/main.js';
+    </script>
+
+    <audio id="bellSound" src="https://freesound.org/data/previews/337/337049_3232490-lq.mp3" preload="auto"></audio>
+</body>
+
+</html>

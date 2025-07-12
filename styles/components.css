@@ -1,0 +1,98 @@
+/* --- Card Component --- */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 30px 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  width: 90%;
+  max-width: 450px;
+  margin: auto;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  will-change: transform;
+  overflow: hidden;
+}
+
+.card:active {
+  transform: scale(0.98);
+}
+
+.card p {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+
+/* --- Buttons --- */
+button,
+.start-cooking-btn,
+.back-btn,
+.shopping-list-btn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 16px;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover,
+.start-cooking-btn:hover {
+  background-color: #eee12b;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.back-btn, 
+.shopping-list-btn{
+  background-color: #ddd;
+  color: #333;
+  margin-top: 30px;
+}
+
+/* --- Inputs --- */
+input {
+  padding: 16px 20px;
+  width: 90%;
+  max-width: 400px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: all 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+}
+
+/* --- Tabs --- */
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-bar button {
+  background: #eee;
+  color: #333;
+  font-weight: bold;
+}
+
+.tab-bar button.active {
+  background: #ff9800;
+  color: white;
+}
